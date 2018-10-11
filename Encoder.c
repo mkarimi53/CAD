@@ -91,9 +91,6 @@ void Fetch_Image(char *Filename, image *Source_Image)
    double *Pixel_Data;
    FILE *Source_File;
 
-   char* resultFilename = "Fetch_Image.txt";
-   FILE* result;
-
    clock_t start, end;
    double cpu_time_used;
 
@@ -128,25 +125,26 @@ void Fetch_Image(char *Filename, image *Source_Image)
    end = clock();
    cpu_time_used = ((double) (end - start)) /CLOCKS_PER_SEC;
 
-   // print result to Fetch_Image
-   printf("result\n");
+   // print result for Fetch_Image
+
+   char* resultFilename = "Fetch_Image.txt";
+   FILE* result;
+
    if ((result = fopen(resultFilename, "w")) == NULL) {
       printf("Problem creating %s.\n", resultFilename);
       exit(0);
    }
+
    fprintf(result, "%d\n", Rows);
    fprintf(result, "%d\n", Columns);
-   printf("%d\n", Rows);
-   printf("%d\n", Columns);
-   for(int i = 0; i < Rows; i++){
-     for(int j = 0; j < Columns; j++){
-       for(int k = 0; k < 3; k++){
-         //printf("%d %d %d\n", i, j, k);
+
+   for(int i = 0; i < Rows; i++)
+     for(int j = 0; j < Columns; j++)
+       for(int k = 0; k < 3; k++)
          fprintf(result, "%f\n", Pixel_Data[(i * Columns * 3) + (j * 3) + k]);
-       }
-     }
-   }
+
    fprintf(result, "%f\n", cpu_time_used);
+
    fclose(result);
 }
 
