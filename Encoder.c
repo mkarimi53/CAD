@@ -94,7 +94,9 @@ void Fetch_Image(char *Filename, image *Source_Image)
    clock_t start, end;
    double cpu_time_used;
 
+   // get starting time of function
    start = clock();
+   
    // open the file
    if ((Source_File = fopen(Filename, "rb")) == NULL) {
       printf("Problem opening source image %s\n", Filename);
@@ -122,12 +124,12 @@ void Fetch_Image(char *Filename, image *Source_Image)
    Source_Image->Columns = Columns;
    Source_Image->Pixel_Data = Pixel_Data;
 
+   //calculate execution time of function
    end = clock();
    cpu_time_used = ((double) (end - start)) /CLOCKS_PER_SEC;
 
-   // print result for Fetch_Image
-
-   char* resultFilename = "Fetch_Image.txt";
+   // write result of FETCH IMAGE in a file
+   char* resultFilename = "fetchImage.txt";
    FILE* result;
 
    if ((result = fopen(resultFilename, "w")) == NULL) {
@@ -143,7 +145,8 @@ void Fetch_Image(char *Filename, image *Source_Image)
        for(int k = 0; k < 3; k++)
          fprintf(result, "%f\n", Pixel_Data[(i * Columns * 3) + (j * 3) + k]);
 
-   fprintf(result, "%f\n", cpu_time_used);
+   // printf(result);
+   printf("CPU time used for Fetch_Image function : %f\n", cpu_time_used);
 
    fclose(result);
 }
@@ -151,13 +154,19 @@ void Fetch_Image(char *Filename, image *Source_Image)
 void colourSpaceConversion(image *Source_Image, double *Source_Data){
     int i, j, Source_Rows, Source_Columns;
     double Y_val, U_val, V_val, R_val, G_val, B_val;
+    clock_t start, end;
+    double cpu_time_used;
+    
+    // get starting time of function
+    start = clock();
+
     double RGB_YUV_matrix[9] = {
        0.257,   0.504,   0.098,
       -0.148,  -0.291,   0.439,
        0.439,  -0.368,  -0.071 };
     Source_Rows = Source_Image->Rows;
     Source_Columns = Source_Image->Columns;
-
+    
     // Colourspace conversion
     for (i = 0; i < Source_Rows; i++)
        for (j = 0; j < Source_Columns; j++) {
@@ -174,12 +183,45 @@ void colourSpaceConversion(image *Source_Image, double *Source_Data){
           V_val = RGB_YUV_matrix[6]*R_val + RGB_YUV_matrix[7]*G_val + RGB_YUV_matrix[8]*B_val;
           Source_Data[RGB_index(Source_Rows, Source_Columns, i, j, R)] = V_val + 128.0;
        }
+
+    //calculate execution time of function
+    end = clock();
+    cpu_time_used = ((double) (end - start)) /CLOCKS_PER_SEC;
+
+    // write result of COLOURSPACE CONVERSION in a file
+    char* resultFilename = "colourspaceConversion.txt";
+    FILE* result;
+
+    if ((result = fopen(resultFilename, "w")) == NULL) {
+      printf("Problem creating %s.\n", resultFilename);
+      exit(0);
+    }
+
+    fprintf(result, "%d\n", Source_Rows);
+    fprintf(result, "%d\n", Source_Columns);
+
+    for(int i=0; i<Source_Rows; ++i)
+      for(int j=0; j<Source_Columns; ++j)
+        for(int k=0; k<3; ++k)
+          fprintf(result, "%f\n", Source_Data[3*((i*Source_Columns)+j) + k]);
+
+    // printf(result);
+    printf("CPU time used for colourSpaceConversion function : %f\n", cpu_time_used);
+
+    fclose(result);
 }
 
 void Downsampling(image *Source_Image, double *Source_Data, image *Downsampled_Image){
     int i, j, Downsampled_Rows, Downsampled_Columns, Source_Rows, Source_Columns;
     int jm5, jm3, jm1, jp1, jp3, jp5;
     double *Downsampled_Data;
+    
+    clock_t start, end;
+    double cpu_time_used;
+
+    // get starting time of function
+    start = clock();
+
     // Downsampling
     Source_Rows = Source_Image->Rows;
     Source_Columns = Source_Image->Columns;
@@ -221,6 +263,29 @@ void Downsampling(image *Source_Image, double *Source_Data, image *Downsampled_I
     Downsampled_Image->Rows = Downsampled_Rows;
     Downsampled_Image->Columns = Downsampled_Columns;
     Downsampled_Image->Pixel_Data = Downsampled_Data;
+
+    //calculate execution time of function
+    end = clock();
+    cpu_time_used = ((double) (end - start)) /CLOCKS_PER_SEC;
+
+    // write result of DOWN SAMPLING in a file
+    char* resultFilename = "downSampling.txt";
+    FILE* result;
+
+    if ((result = fopen(resultFilename, "w")) == NULL) {
+      printf("Problem creating %s.\n", resultFilename);
+      exit(0);
+    }
+
+    fprintf(result, "%d\n", Downsampled_Rows);
+    fprintf(result, "%d\n", Downsampled_Columns);
+
+    // write result of DOWN SAMPLING in a file
+
+    // printf(result);
+    printf("CPU time used for Downsampling function : %f\n", cpu_time_used);
+
+    fclose(result);
 }
 
 void Discrete_Cosine_Transform(image *Downsampled_Image, int Compression_Format, double *****Block_Data, double ***s)
